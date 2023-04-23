@@ -3,10 +3,9 @@
 #include <signal.h>
 #include <ncurses.h>
 
-int input;
-int selectedTodo = 0;
-int editingTodo = -1;
-int score = 0;
+unsigned short input;
+unsigned short selectedTodo = 0;
+short editingTodo = -1;
 
 struct Todo
 {
@@ -33,16 +32,17 @@ void drawAndLogic(bool logic = true)
             case 'A':
                 if (todos.size() > 0 && editingTodo == -1)
                 {
-                    selectedTodo--;
-                    if (selectedTodo < 0)
+                    if (selectedTodo == 0)
                         selectedTodo = todos.size() - 1;
+                    else
+                        selectedTodo--;
                 }
                 break;
             case 'B':
                 if (todos.size() > 0 && editingTodo == -1)
                 {
                     selectedTodo++;
-                    if (selectedTodo >= todos.size())
+                    if (selectedTodo >= (int)todos.size())
                         selectedTodo = 0;
                 }
                 break;
@@ -88,11 +88,11 @@ void drawAndLogic(bool logic = true)
     if (todos.size())
     {
         printw("All your todos:\n");
-        for (int i = 0; i < todos.size(); i++)
+        for (size_t i = 0; i < todos.size(); i++)
         {
             done = todos[i].done ? 'X' : ' ';
 
-            if (i == selectedTodo)
+            if (i == (size_t)selectedTodo)
                 attron(COLOR_PAIR(5));
             else
                 attroff(COLOR_PAIR(5));
@@ -129,11 +129,6 @@ void drawAndLogic(bool logic = true)
     refresh();
 }
 
-void handleResize(int _sig)
-{
-    drawAndLogic(false);
-}
-
 int main()
 {
     initscr();
@@ -144,9 +139,6 @@ int main()
     init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(4, COLOR_YELLOW, COLOR_BLACK);
     init_pair(5, COLOR_BLACK, COLOR_YELLOW);
-
-    // Sets the signal handler for SIGWINCH (Window Resize)
-    signal(SIGWINCH, handleResize);
 
     todos.push_back(Todo{"Write a Todo App", false});
     todos.push_back(Todo{"Make a cup of coffee", false});
