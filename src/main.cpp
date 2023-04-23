@@ -1,10 +1,6 @@
-#include <termios.h>
 #include <iostream>
-#include <unistd.h>
-#include <ctype.h>
 #include <vector>
 #include <signal.h>
-#include <sys/ioctl.h>
 #include <string.h>
 #include <ncurses.h>
 
