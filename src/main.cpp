@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <signal.h>
-#include <string.h>
 #include <ncurses.h>
 
 int input;
