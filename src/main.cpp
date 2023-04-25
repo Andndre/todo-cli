@@ -52,6 +52,7 @@ void drawAndLogic(bool logic = true)
                 break;
             case '\n':
             case 'x':
+            case ' ':
                 if (editingTodo == -1)
                     todos[selectedTodo].done = !todos[selectedTodo].done;
                 break;
