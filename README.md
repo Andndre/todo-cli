@@ -16,7 +16,7 @@ To run this project, type `make run` in the terminal
 Once you start the application, you will see a list of todo items in the console, along with some instructions on how to navigate and modify the list. The available commands are:
 
 **In NORMAL MODE:**
-- `ENTER` or `x`: toggle the selected item as done or not done.
+- `ENTER` or `x` or `SPACE`: toggle the selected item as done or not done.
 - `n`: create a new todo item.
 - `d`: delete the selected todo item.
 - `UP ARROW`: move the selection up.
@@ -25,6 +25,7 @@ Once you start the application, you will see a list of todo items in the console
 
 **In EDIT MODE**
 - `BACKSPACE`: delete the last character of the editing item.
+- `CTRL + BACKSPACE`: delete a word
 - **any other key**: append the key to the editing item.
 - `ENTER`: save the editing item (back to NORMAL MODE).
 
