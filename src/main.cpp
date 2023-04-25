@@ -18,79 +18,80 @@ std::vector<Todo> todos;
  * Draws a todo list and handles user input to modify it.
  * @param logic A boolean value indicating whether to process user input or not.
  */
-void drawAndLogic(bool logic = true)
+void drawAndLogic(bool *breaked)
 {
     clear();
 
-    if (logic)
+    if (editingTodo == -1)
     {
-        if (editingTodo == -1)
+        switch (input)
         {
-            switch (input)
+        case 'A':
+            if (todos.size() > 0 && editingTodo == -1)
             {
-            case 'A':
-                if (todos.size() > 0 && editingTodo == -1)
-                {
-                    if (selectedTodo == 0)
-                        selectedTodo = todos.size() - 1;
-                    else
-                        selectedTodo--;
-                }
-                break;
-            case 'B':
-                if (todos.size() > 0 && editingTodo == -1)
-                {
-                    selectedTodo++;
-                    if (selectedTodo >= (int)todos.size())
-                        selectedTodo = 0;
-                }
-                break;
-            case 'd':
-                if (editingTodo == -1 && todos.size() > 0)
-                    todos.erase(todos.begin() + selectedTodo);
-                break;
-            case '\n':
-            case 'x':
-            case ' ':
-                if (editingTodo == -1)
-                    todos[selectedTodo].done = !todos[selectedTodo].done;
-                break;
-            case 'e':
-                if (todos.size() > 0)
-                    editingTodo = selectedTodo;
-                break;
-            case 'n':
-                todos.push_back(Todo{"New Todo", false});
-                selectedTodo = todos.size() - 1;
+                if (selectedTodo == 0)
+                    selectedTodo = todos.size() - 1;
+                else
+                    selectedTodo--;
+            }
+            break;
+        case 'B':
+            if (todos.size() > 0 && editingTodo == -1)
+            {
+                selectedTodo++;
+                if (selectedTodo >= (int)todos.size())
+                    selectedTodo = 0;
+            }
+            break;
+        case 'd':
+            if (editingTodo == -1 && todos.size() > 0)
+                todos.erase(todos.begin() + selectedTodo);
+            break;
+        case '\n':
+        case 'x':
+        case ' ':
+            if (editingTodo == -1)
+                todos[selectedTodo].done = !todos[selectedTodo].done;
+            break;
+        case 'e':
+            if (todos.size() > 0)
                 editingTodo = selectedTodo;
-                break;
-            }
-        }
-        else
-        {
-            switch (input)
-            {
-            case '\n':
-                editingTodo = -1;
-                break;
-            case 8: // CTRL + BACKSPACE
-                do
-                {
-                    if (!todos[editingTodo].text.empty())
-                        todos[editingTodo].text.pop_back();
-                } while (!todos[editingTodo].text.empty() &&
-                         todos[editingTodo].text.back() != ' ');
-                break;
-            case 127: // BACKSPACE
-            case KEY_BACKSPACE:
-                if (todos[editingTodo].text.size() > 0)
-                    todos[editingTodo].text.pop_back();
-                break;
-            default:
-                todos[editingTodo].text += input;
-            }
+            break;
+        case 'n':
+            todos.push_back(Todo{"New Todo", false});
+            selectedTodo = todos.size() - 1;
+            editingTodo = selectedTodo;
+            break;
+        case 'q':
+            *breaked = true;
+            return;
         }
     }
+    else
+    {
+        switch (input)
+        {
+        case '\n':
+            editingTodo = -1;
+            break;
+        case 8: // CTRL + BACKSPACE
+            do
+            {
+                if (!todos[editingTodo].text.empty())
+                    todos[editingTodo].text.pop_back();
+            } while (!todos[editingTodo].text.empty() &&
+                     todos[editingTodo].text.back() != ' ');
+            break;
+        case 127: // BACKSPACE
+        case KEY_BACKSPACE:
+            if (todos[editingTodo].text.size() > 0)
+                todos[editingTodo].text.pop_back();
+            break;
+        default:
+            todos[editingTodo].text += input;
+        }
+    }
+
     char done = ' ';
 
     attron(COLOR_PAIR(4));
@@ -152,14 +153,14 @@ int main()
     todos.push_back(Todo{"Write a Todo App", false});
     todos.push_back(Todo{"Make a cup of coffee", false});
 
-    drawAndLogic(false);
+    bool breaked = false;
 
-    while (true)
+    drawAndLogic(&breaked);
+
+    while (!breaked)
     {
         input = getch();
-        if (input == 'q')
-            break;
-        drawAndLogic();
+        drawAndLogic(&breaked);
     }
 
     endwin();
