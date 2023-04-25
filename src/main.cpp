@@ -122,7 +122,8 @@ void drawAndLogic(bool *breaked)
     printw("\nENTER\t toggle done\n");
     printw("n\t create new Todo\n");
     printw("d\t delete Todo\n");
-    printw("e\t edit Todo\n\n");
+    printw("e\t edit Todo\n");
+    printw("q\t quit\n\n");
     attroff(COLOR_PAIR(3));
 
     attron(COLOR_PAIR(2));
