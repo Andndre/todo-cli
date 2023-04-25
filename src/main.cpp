@@ -73,9 +73,19 @@ void drawAndLogic(bool logic = true)
             case '\n':
                 editingTodo = -1;
                 break;
+            case 8: // CTRL + BACKSPACE
+                do
+                {
+                    if (todos[editingTodo].text.size() > 0)
+                    {
+                        todos[editingTodo].text.pop_back();
+                    }
+                } while (todos[editingTodo].text.size() > 0 && todos[editingTodo].text[todos[editingTodo].text.size() - 1] != ' ');
+                break;
             case 127: // BACKSPACE
             case KEY_BACKSPACE:
-                todos[editingTodo].text.pop_back();
+                if (todos[editingTodo].text.size() > 0)
+                    todos[editingTodo].text.pop_back();
                 break;
             default:
                 todos[editingTodo].text += input;
