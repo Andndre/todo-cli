@@ -76,11 +76,10 @@ void drawAndLogic(bool logic = true)
             case 8: // CTRL + BACKSPACE
                 do
                 {
-                    if (todos[editingTodo].text.size() > 0)
-                    {
+                    if (!todos[editingTodo].text.empty())
                         todos[editingTodo].text.pop_back();
-                    }
-                } while (todos[editingTodo].text.size() > 0 && todos[editingTodo].text[todos[editingTodo].text.size() - 1] != ' ');
+                } while (!todos[editingTodo].text.empty() &&
+                         todos[editingTodo].text.back() != ' ');
                 break;
             case 127: // BACKSPACE
             case KEY_BACKSPACE:
