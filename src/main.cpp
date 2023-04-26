@@ -2,27 +2,59 @@
 #include <vector>
 #include <ncurses.h>
 
-unsigned short input;
-unsigned short selectedTodo = 0;
-short editingTodo = -1;
-
 struct Todo
 {
     std::string text;
     bool done;
 };
 
-std::vector<Todo> todos;
-
-/**
- * Draws a todo list and handles user input to modify it.
- * @param logic A boolean value indicating whether to process user input or not.
- */
-void drawAndLogic(bool *breaked)
+class TodoApp
 {
-    clear();
+public:
+    TodoApp()
+    {
+        initscr();
+        start_color();
+        init_pair(1, COLOR_WHITE, COLOR_BLACK);
+        init_pair(2, COLOR_GREEN, COLOR_BLACK);
+        init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+        init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+        init_pair(5, COLOR_BLACK, COLOR_YELLOW);
+    }
+    ~TodoApp()
+    {
+        endwin();
+    }
+    void run()
+    {
+        draw();
+        while (!stopped)
+        {
+            input = getch();
+            draw();
+        }
+    }
 
-    if (editingTodo == -1)
+private:
+    std::vector<Todo> todos;
+    unsigned short input;
+    unsigned short selectedTodo = 0;
+    short editingTodo = -1;
+    bool stopped = false;
+
+private:
+    void draw()
+    {
+        clear();
+        if (editingTodo == -1)
+            normalModeAction();
+        else
+            editModeAction();
+        drawTodos();
+        refresh();
+    }
+
+    void normalModeAction()
     {
         switch (input)
         {
@@ -63,11 +95,12 @@ void drawAndLogic(bool *breaked)
             editingTodo = selectedTodo;
             break;
         case 'q':
-            *breaked = true;
+            stopped = true;
             return;
         }
     }
-    else
+
+    void editModeAction()
     {
         switch (input)
         {
@@ -92,77 +125,51 @@ void drawAndLogic(bool *breaked)
         }
     }
 
-    char done = ' ';
-
-    attron(COLOR_PAIR(4));
-    if (todos.size())
+    void drawTodos()
     {
-        printw("All your todos:\n");
-        for (size_t i = 0; i < todos.size(); i++)
+        char done = ' ';
+
+        attron(COLOR_PAIR(4));
+        if (todos.size())
         {
-            done = todos[i].done ? 'X' : ' ';
+            printw("All your todos:\n");
+            for (size_t i = 0; i < todos.size(); i++)
+            {
+                done = todos[i].done ? 'X' : ' ';
 
-            if (i == (size_t)selectedTodo)
-                attron(COLOR_PAIR(5));
-            else
-                attroff(COLOR_PAIR(5));
+                if (i == (size_t)selectedTodo)
+                    attron(COLOR_PAIR(5));
+                else
+                    attroff(COLOR_PAIR(5));
 
-            printw("[%c] %s\n", done, todos[i].text.c_str());
+                printw("[%c] %s\n", done, todos[i].text.c_str());
+            }
         }
-    }
-    else
-    {
-        printw("No todos!\n");
-    }
+        else
+            printw("No todos!\n");
 
-    attroff(COLOR_PAIR(4));
-    attroff(COLOR_PAIR(5));
+        attroff(COLOR_PAIR(4));
+        attroff(COLOR_PAIR(5));
 
-    attron(COLOR_PAIR(3));
-    printw("\nENTER\t toggle done\n");
-    printw("n\t create new Todo\n");
-    printw("d\t delete Todo\n");
-    printw("e\t edit Todo\n");
-    printw("q\t quit\n\n");
-    attroff(COLOR_PAIR(3));
+        attron(COLOR_PAIR(3));
+        printw("\nENTER\t toggle done\n");
+        printw("n\t create new Todo\n");
+        printw("d\t delete Todo\n");
+        printw("e\t edit Todo\n");
+        printw("q\t quit\n\n");
+        attroff(COLOR_PAIR(3));
 
-    attron(COLOR_PAIR(2));
-    if (editingTodo == -1)
-    {
-        printw("NORMAL MODE");
+        attron(COLOR_PAIR(2));
+        if (editingTodo == -1)
+            printw("NORMAL MODE");
+        else
+            printw("EDIT MODE");
+        attroff(COLOR_PAIR(2));
     }
-    else
-    {
-        printw("EDIT MODE");
-    }
-    attroff(COLOR_PAIR(2));
-
-    refresh();
-}
+};
 
 int main()
 {
-    initscr();
-    start_color();
-
-    init_pair(1, COLOR_WHITE, COLOR_BLACK);
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
-    init_pair(4, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(5, COLOR_BLACK, COLOR_YELLOW);
-
-    todos.push_back(Todo{"Write a Todo App", false});
-    todos.push_back(Todo{"Make a cup of coffee", false});
-
-    bool breaked = false;
-
-    drawAndLogic(&breaked);
-
-    while (!breaked)
-    {
-        input = getch();
-        drawAndLogic(&breaked);
-    }
-
-    endwin();
+    TodoApp app;
+    app.run();
 }
