@@ -1,4 +1,3 @@
 output
 **/*.d
 **/*.o
-data/*.todo
