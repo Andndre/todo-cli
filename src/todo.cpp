@@ -1,4 +1,8 @@
 #include <ncurses.h>
+#include <fstream>
+#include <cstring>
+#include <stdlib.h>
+#include <cerrno>
 #include "todo.h"
 
 TodoApp::TodoApp()
@@ -10,9 +14,11 @@ TodoApp::TodoApp()
 	init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
 	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
 	init_pair(5, COLOR_BLACK, COLOR_YELLOW);
+	loadData();
 }
 TodoApp::~TodoApp()
 {
+	saveData();
 	endwin();
 }
 
@@ -148,4 +154,48 @@ void TodoApp::drawTodos()
 	else
 		printw("EDIT MODE");
 	attroff(COLOR_PAIR(2));
+}
+
+void TodoApp::loadData()
+{
+	std::ifstream file("data/todos.todo");
+	if (file.is_open())
+	{
+		std::string line;
+		while (std::getline(file, line))
+		{
+			std::string done = line.substr(0, 1);
+			todos.push_back(Todo{
+					line.substr(2),
+					strcmp(done.c_str(), "1") == 0});
+		}
+		file.close();
+	}
+	else
+	{
+		printf("Could not open todos.todo\n");
+		saveData();
+	}
+}
+
+void TodoApp::saveData()
+{
+	std::ofstream file("data/todos.todo", std::ios::out | std::ios::trunc);
+	if (file.is_open())
+	{
+		for (size_t i = 0; i < todos.size(); i++)
+		{
+			if (todos[i].done)
+				file << "1";
+			else
+				file << "0";
+			file << ':' << todos[i].text << std::endl;
+		}
+		file.close();
+	}
+	else
+	{
+		printf("Could not open todos.todo:\n\t%s\n", strerror(errno));
+		exit(1);
+	}
 }

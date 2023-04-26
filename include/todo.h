@@ -12,12 +12,14 @@ struct Todo
 class TodoApp
 {
 public:
+	std::vector<Todo> todos;
+
+public:
 	TodoApp();
 	~TodoApp();
 	void run();
 
 private:
-	std::vector<Todo> todos;
 	unsigned short input;
 	unsigned short selectedTodo = 0;
 	short editingTodo = -1;
@@ -28,4 +30,6 @@ private:
 	void normalModeAction();
 	void editModeAction();
 	void drawTodos();
+	void loadData();
+	void saveData();
 };
